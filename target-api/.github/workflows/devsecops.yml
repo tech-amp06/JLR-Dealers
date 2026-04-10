@@ -1,0 +1,55 @@
+name: API-Hunter DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the Target API Code (The repo this action lives in)
+      - name: 📥 Checkout Target API
+        uses: actions/checkout@v3
+        with:
+          path: 'target-api'
+
+      # 2. Checkout your Python Scanner Repo 
+      - name: 📥 Checkout API-Hunter Security Engine
+        uses: actions/checkout@v3
+        with:
+          repository: 'tech-amp06/JLR-Dealers' 
+          path: 'api-hunter'
+
+      # 3. Setup Node.js (uses)
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      # 4. Start the Target Application (run)
+      - name: 🚀 Start Target API
+        run: |
+          cd target-api
+          npm install
+          npm start &  
+          sleep 5      
+
+      # 5. Setup Python for the Scanner
+      - name: 🐍 Setup Python for API-Hunter
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # 6. Execute BOLA Scan
+      - name: ⚔️ Execute BOLA Scan
+        run: |
+          cd api-hunter
+          pip install -r requirements.txt
+          playwright install chromium
+          python scanner.py
+        env:
+          TARGET_FRONTEND_URL: "http://localhost:3000"
+          ATTACKER_USERNAME: "dealer_alpha"
+          ATTACKER_PASSWORD: "password123"
