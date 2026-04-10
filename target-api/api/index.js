@@ -5,9 +5,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const authRoutes = require('./routes/auth');
-const indentHistoryRoutes = require('./routes/indent-history');
-const dealerRoutes = require('./routes/dealer');
+const authRoutes = require('../src/routes/auth');
+const indentHistoryRoutes = require('../src/routes/indent-history');
+const dealerRoutes = require('../src/routes/dealer');
 
 app.use('/auth', authRoutes);
 app.use('/indent-history', indentHistoryRoutes);
